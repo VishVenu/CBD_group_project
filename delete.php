@@ -1,18 +1,21 @@
 <?php
 // Process delete operation after confirmation
-if(isset($_POST["id"]) && !empty($_POST["id"])){
+$is_valid_order_number = isset($_POST["order_number"]) && !empty($_POST["order_number"]) && is_numeric($_POST["order_number"]); 
+$is_vaild_order_line_number = isset($_POST["order_line_number"]) && !empty($_POST["order_line_number"]) && is_numeric($_POST["order_line_number"])
+if($is_valid_order_number && $is_valid_order_line_number ){
     // Include config file
     require_once "config.php";
     
     // Prepare a delete statement
-    $sql = "DELETE FROM employee WHERE id = ?";
+    $sql = "DELETE FROM orderdetails WHERE orderNumber = ? AND orderLineNumber = ?";
     
     if($stmt = mysqli_prepare($link, $sql)){
         // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "i", $param_id);
+        mysqli_stmt_bind_param($stmt, "ii", $param_order_number, $param_order_line_number);
         
         // Set parameters
-        $param_id = trim($_POST["id"]);
+        $param_order_number = $_POST["order_number"];
+        $param_order_line_number = $_POST["order_line_number"];
         
         // Attempt to execute the prepared statement
         if(mysqli_stmt_execute($stmt)){
