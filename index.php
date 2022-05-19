@@ -8,7 +8,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <style type="text/css">
         .wrapper{
-            width: 650px;
+            width: 90%;
             margin: 0 auto;
         }
         .page-header h2{
@@ -47,7 +47,8 @@
                                     echo "<th>Order Number</th>";
                                     echo "<th>Order Date</th>";
                                     echo "<th>Order LineNumber</th>";
-                                    echo "<th>Product Number</th>";
+                                    echo "<th>Product Code</th>";
+                                    echo "<th>Product Name</th>";
                                     echo "<th>Quantity Ordered</th>";
                                     echo "<th>Price Each</th>";
                                     echo "<th>Actions</th>";
@@ -60,6 +61,7 @@
                                     echo "<td>" . $row['orderDate'] . "</td>";
                                     echo "<td>" . $row['orderLineNumber'] . "</td>";
                                     echo "<td>" . $row['productCode'] . "</td>";
+                                    echo "<td>" . $row['productName'] . "</td>";
                                     echo "<td>" . $row['quantityOrdered'] . "</td>";
                                     echo "<td>" . $row['priceEach'] . "</td>";
                                     echo "<td>";
