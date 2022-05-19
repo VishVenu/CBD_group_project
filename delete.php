@@ -1,7 +1,9 @@
 <?php
 // Process delete operation after confirmation
-$is_valid_order_number = isset($_POST["order_number"]) && !empty($_POST["order_number"]) && is_numeric($_POST["order_number"]); 
-$is_vaild_order_line_number = isset($_POST["order_line_number"]) && !empty($_POST["order_line_number"]) && is_numeric($_POST["order_line_number"])
+$order_number = intval($_POST["order_number"]);
+$order_line_number = $_POST["order_line_number"];
+$is_valid_order_number = isset($order_number) && !empty($order_number) && is_numeric($order_number); 
+$is_valid_order_line_number = isset($order_line_number) && !empty($order_line_number) && is_numeric($order_line_number);
 if($is_valid_order_number && $is_valid_order_line_number ){
     // Include config file
     require_once "config.php";
@@ -14,8 +16,8 @@ if($is_valid_order_number && $is_valid_order_line_number ){
         mysqli_stmt_bind_param($stmt, "ii", $param_order_number, $param_order_line_number);
         
         // Set parameters
-        $param_order_number = $_POST["order_number"];
-        $param_order_line_number = $_POST["order_line_number"];
+        $param_order_number = $order_number;
+        $param_order_line_number = $order_line_number;
         
         // Attempt to execute the prepared statement
         if(mysqli_stmt_execute($stmt)){
@@ -34,11 +36,12 @@ if($is_valid_order_number && $is_valid_order_line_number ){
     mysqli_close($link);
 } else{
     // Check existence of id parameter
-    if(empty(trim($_GET["id"]))){
+    if(!$is_valid_order_number || !$is_valid_order_line_number ){
         // URL doesn't contain id parameter. Redirect to error page
         header("location: error.php");
         exit();
     }
+
 }
 ?>
 <!DOCTYPE html>
@@ -64,7 +67,7 @@ if($is_valid_order_number && $is_valid_order_line_number ){
                     </div>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="alert alert-danger fade in">
-                            <input type="hidden" name="id" value="<?php echo trim($_GET["id"]); ?>"/>
+                            <input type="hidden" name="order_number" value="<?php echo $_GET["order_number"]; ?>"/>
                             <p>Are you sure you want to delete this record?</p><br>
                             <p>
                                 <input type="submit" value="Yes" class="btn btn-danger">
