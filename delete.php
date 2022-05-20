@@ -1,9 +1,6 @@
 <?php
 // Process delete operation after confirmation
-if(isset($_POST['order_number']) && !empty($_POST['order_number'])){
-    // $order_details = (array) $_POST['order'];
-    // $order_number = $order_details[0];
-    // $order_line_number = $order_details[1];
+if(isset($_POST['order_number']) && !empty($_POST['order_number']) && isset($_POST['order_line_number']) && !empty($_POST['order_line_number'])){
 
     $order_number = $_POST['order_number'];
     $order_line_number = $_POST['order_line_number'];
@@ -38,7 +35,7 @@ if(isset($_POST['order_number']) && !empty($_POST['order_number'])){
     mysqli_close($link);
 } else{
     // Check existence of order parameter
-    if(empty($_GET['order_number'])){
+    if(empty($_GET['order_number']) || empty($_GET['order_line_number'])){
         // URL doesn't contain id parameter. Redirect to error page
         header("location: error.php");
         exit();
@@ -68,8 +65,8 @@ if(isset($_POST['order_number']) && !empty($_POST['order_number'])){
                     </div>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="alert alert-danger fade in">
-                            <input type="" name="order_number" value="<?php echo $_GET["order_number"]; ?>"/>
-							<input type="" name="order_line_number" value="<?php echo $_GET["order_line_number"]; ?>"/>
+                            <input type="hidden" name="order_number" value="<?php echo $_GET["order_number"]; ?>"/>
+							<input type="hidden" name="order_line_number" value="<?php echo $_GET["order_line_number"]; ?>"/>
                             <p>Are you sure you want to delete this record?</p><br>
                             <p>
                                 <input type="submit" value="Yes" class="btn btn-danger">
