@@ -41,18 +41,8 @@ if(!empty($order_number) && !empty($order_line_number)){
             echo "Oops! Something went wrong. Please try again later.";
         }
     
-    
-    $input_order_date = trim($_GET["order_date"]);
-    if(empty($input_name)){
-        $order_date_err = "Please enter a order date.";
-    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/")))){
-        $order_date_err = "Please enter a valid order date in yyyy-mm-dd.";
-    } else{
-        $order_date = $input_order_date;
-    }
-    
     // Validate quantity ordered
-    $input_quantity_ordered = trim($_GET["quantity_ordered"]);
+    $input_quantity_ordered = trim($_POST["quantity_ordered"]);
     if(empty($input_quantity_ordered)){
         $quantity_ordered_err = "Please enter the quantity ordered.";
     } else{
@@ -61,7 +51,7 @@ if(!empty($order_number) && !empty($order_line_number)){
     }
     
     // Validate price each
-    $input_price_each = trim($_GET["price_each"]);
+    $input_price_each = trim($_POST["price_each"]);
     if(empty($input_price_each)){
         $price_each_err = "Please enter price each value.";
     } else{
@@ -127,7 +117,7 @@ if(!empty($order_number) && !empty($order_line_number)){
                 $quantity_ordered = $select_row["quantityOrdered"];
                 $price_each = $select_row["priceEach"];
                 
-                }
+                
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
             }
