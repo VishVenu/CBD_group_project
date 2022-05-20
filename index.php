@@ -63,7 +63,7 @@
                                     echo "<td>" . $row['quantityOrdered'] . "</td>";
                                     echo "<td>" . $row['priceEach'] . "</td>";
                                     echo "<td>";
-                                        echo "<a href='read.php?order_number=". $row['orderNumber'] ."' title='View Record' data-toggle='tooltip'><span class='glyphicon glyphicon-eye-open'></span></a>";
+                                    echo "<a href='read.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."' title='View Record' data-toggle='tooltip'><span class='glyphicon glyphicon-eye-open'></span></a>";
                                         echo "<a href='update.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."' title='Update Record' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
                                         echo "<a href='delete.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."' title='Delete Record' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
                                     echo "</td>";
