@@ -70,7 +70,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                         </div>
                     </form>
                 </div>
-            </div>
+            </div>        
         </div>
     </div>
 </body>
