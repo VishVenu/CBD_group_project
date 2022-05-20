@@ -47,7 +47,6 @@
                                     echo "<th>Order Number</th>";
                                     echo "<th>Order Date</th>";
                                     echo "<th>Order LineNumber</th>";
-                                    echo "<th>Product Code</th>";
                                     echo "<th>Product Name</th>";
                                     echo "<th>Quantity Ordered</th>";
                                     echo "<th>Price Each</th>";
@@ -60,7 +59,6 @@
                                     echo "<td>" . $row['orderNumber'] . "</td>";
                                     echo "<td>" . $row['orderDate'] . "</td>";
                                     echo "<td>" . $row['orderLineNumber'] . "</td>";
-                                    echo "<td>" . $row['productCode'] . "</td>";
                                     echo "<td>" . $row['productName'] . "</td>";
                                     echo "<td>" . $row['quantityOrdered'] . "</td>";
                                     echo "<td>" . $row['priceEach'] . "</td>";
