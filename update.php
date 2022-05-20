@@ -3,16 +3,15 @@
 require_once "config.php";
  
 // Define variables and initialize with empty values
-$order_date = $product_number = $quantity_ordered = $price_each = "";
-$order_date_err = $product_number_err = $quantity_ordered_err = $price_each_err = "";
- 
+$order_date = $product_number = $quantity_ordered = $price_each = " ";
+$order_date_err = $product_number_err = $quantity_ordered_err = $price_each_err = " ";
 // Processing form data when form is submitted
-if(isset($_POST["order_number"]) && !empty($_POST["order_number"]) && isset($_POST["order_line_number"]) && !empty($_POST["order_line_number"])){
+if(isset($_POST['order_number']) && !empty($_POST['order_number'])){
     // Get hidden input value
     $order_number = $_POST["order_number"];
     
     $order_line_number = $_POST["order_line_number"];
-    
+    $entered="True";
     // Validate order date
     $input_order_date = trim($_POST["order_date"]);
     if(empty($input_name)){
@@ -75,44 +74,21 @@ if(isset($_POST["order_number"]) && !empty($_POST["order_number"]) && isset($_PO
                 echo "Something went wrong. Please try again later.";
             }
         }
-        
-        /*if($stmt = mysqli_prepare($link, $sql)){
-            // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "sssi", $param_order_date, $param_product_number, $param_quantity_ordered, $param_price_each, $param_order_number, $param_order_line_number);
-            
-            // Set parameters
-            $param_order_date = $order_date;
-            $param_product_number = $product_number;
-            $param_quantity_ordered = $quantity_ordered;
-            $param_price_each = $price_each;
-            $param_order_number = $order_number;
-            $param_order_line_number = $order_line_number;
-            
-            // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
-                // Records updated successfully. Redirect to landing page
-                header("location: index.php");
-                exit();
-            } else{
-                echo "Something went wrong. Please try again later.";
-            }
-        }*/
-         
         // Close statement
         mysqli_stmt_close($stmt);
     }
     
     // Close connection
     mysqli_close($link);
-} else{
+}else{
     // Check existence of id parameter before processing further
     if(isset($_POST["order_number"]) && !empty($_POST["order_number"]) && isset($_POST["order_line_number"]) && !empty($_POST["order_line_number"])){
         // Get hidden input value
         $order_number = $_POST["order_number"];
         $order_line_number = $_POST["order_line_number"];
-        
+        $entered="Second Loop";
         // Prepare a select statement
-        $sql = "SELECT orderNumber, orderDate, orderLineNumber, productName, quantityOrdered, priceEach, productCode FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN products USING (productCode) ORDER BY orderNumber, orderLineNumber;";
+        $sql = "SELECT orderNumber, orderDate, orderLineNumber, productName, quantityOrdered, priceEach, productCode FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN products USING (productCode) WHERE orderdetails.orderNumber=? AND orderdetails.orderLineNumber=? ORDER BY orderNumber, orderLineNumber ;";
         
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
@@ -128,8 +104,8 @@ if(isset($_POST["order_number"]) && !empty($_POST["order_number"]) && isset($_PO
                 $result = mysqli_stmt_get_result($stmt);
     
                 if(mysqli_num_rows($result) == 1){
-                    /* Fetch result row as an associative array. Since the result set
-                    contains only one row, we don't need to use while loop */
+                    // Fetch result row as an associative array. Since the result set
+                    //contains only one row, we don't need to use while loop
                     $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
                     
                     // Retrieve individual field value
@@ -186,6 +162,14 @@ if(isset($_POST["order_number"]) && !empty($_POST["order_number"]) && isset($_PO
                     </div>
                     <p>Please edit the input values and submit to update the record.</p>
                     <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
+                        <div class="form-group">
+                            <label>Order Number</label>
+                            <input type="text" name="order_number" class="form-control" value="<?php echo $order_number; ?>" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Order Line Number</label>
+                            <input type="text" name="order_line_number" class="form-control" value="<?php echo $order_line_number; ?>" readonly>
+                        </div>
                         <div class="form-group <?php echo (!empty($order_date_err)) ? 'has-error' : ''; ?>">
                             <label>Order Date</label>
                             <input type="text" name="order_date" class="form-control" value="<?php echo $order_date; ?>">
