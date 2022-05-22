@@ -3,8 +3,8 @@
 require_once "config.php";
 
 // Define variables and initialize with empty values
-$order_date = $product_number = $quantity_ordered = $price_each ='';
-$order_date_err = $product_number_err = $quantity_ordered_err = $price_each_err = '';
+$order_date = $product_name = $quantity_ordered = $price_each = $shipped_date='';
+$order_date_err = $product_name_err = $quantity_ordered_err = $price_each_err = '';
 // Processing form data when form is submitted
 $order_number = $_GET['order_number'];
 
@@ -14,7 +14,7 @@ if(!empty($order_number) && !empty($order_line_number)){
     // Validate order date
     if(!isset($_POST["quantity_ordered"]))
     {
-        $select_sql = "SELECT orderDate, productName, quantityOrdered, priceEach FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN products USING (productCode) WHERE orders.orderNumber = ? AND orderdetails.orderLineNumber = ?;";
+        $select_sql = "SELECT orderDate, productName, quantityOrdered, priceEach, shippedDate FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN products USING (productCode) WHERE orders.orderNumber = ? AND orderdetails.orderLineNumber = ?;";
         
         if($select_stmt = mysqli_prepare($link, $select_sql)){
             // Bind variables to the prepared statement as parameters
@@ -33,18 +33,44 @@ if(!empty($order_number) && !empty($order_line_number)){
                 
                 // Retrieve individual field value
                 $order_date = $select_row["orderDate"];
-                $product_number = $select_row["productName"];
+                $product_name = $select_row["productName"];
                 $quantity_ordered = $select_row["quantityOrdered"];
                 $price_each = $select_row["priceEach"];
+                $shipped_date=$select_row["shippedDate"];
             }
         } else{
             echo "Oops! Something went wrong. Please try again later.";
         }
     }
     else{
+        $shipped_date = trim($_POST["shipped_date"]);
         
-        $order_date = trim($_POST["order_date"]);
-        $product_number = trim($_POST["product_number"]);
+        // Validate order date
+        $input_order_date = trim($_POST["order_date"]);
+        if(empty($input_order_date)){
+            $order_date_err="Please enter the order date.";
+        }
+        elseif(!filter_var($input_order_date, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/")))){
+            $order_date_err = "Please enter a valid date in yyyy-mm-dd format.";
+        }
+        elseif($input_order_date > $shipped_date){
+            $order_date_err="Order date exceeds shipped date : " . $shipped_date;
+        }
+        else{
+            $order_date_err='';
+            $order_date=$input_order_date;
+        }
+        
+        // Validate product name
+        $input_product_name = trim($_POST["product_name"]);
+        if(empty($input_product_name)){
+            $product_name_err="Please enter the order date.";
+        }
+        else{
+            $product_name_err='';
+            $product_name=$input_product_name;
+        }
+        
         // Validate quantity ordered
         $input_quantity_ordered = trim($_POST["quantity_ordered"]);
         if(empty($input_quantity_ordered)){
@@ -68,15 +94,17 @@ if(!empty($order_number) && !empty($order_line_number)){
         
         
         // Check input errors before inserting in database
-        if(empty($quantity_ordered_err) && empty($price_each_err)){
+        if(empty($quantity_ordered_err) && empty($price_each_err) && empty($order_date_err) && empty($product_name_err)){
             // Prepare an update statement
-            $sql = "UPDATE orderdetails SET quantityOrdered = ?, priceEach = ? WHERE orderNumber = ? AND orderLineNumber = ?;";
+            $sql = "UPDATE orderdetails INNER JOIN orders on orders.orderNumber=orderdetails.orderNumber INNER JOIN products on products.productCode=orderdetails.productCode SET orderDate = ? , productName = ?,quantityOrdered = ?, priceEach = ?  WHERE orderdetails.orderNumber = ? AND orderdetails.orderLineNumber = ?;";
             
             if($stmt = mysqli_prepare($link, $sql)){
                 // Bind variables to the prepared statement as parameters
-                mysqli_stmt_bind_param($stmt, "sssi", $param_quantity_ordered, $param_price_each, $param_order_number, $param_order_line_number);
+                mysqli_stmt_bind_param($stmt, "sssssi", $param_order_date, $param_product_name, $param_quantity_ordered, $param_price_each, $param_order_number, $param_order_line_number);
                 
                 // Set parameters
+                $param_order_date=$order_date;
+                $param_product_name=$product_name;
                 $param_quantity_ordered = $quantity_ordered;
                 $param_price_each = $price_each;
                 $param_order_number = $order_number;
@@ -136,13 +164,15 @@ margin: 0 auto;
 <label>Order Line Number</label>
 <input type="text" name="order_line_number" class="form-control" value="<?php echo $order_line_number; ?>" readonly>
 </div>
-<div class="form-group">
+<div class="form-group <?php echo (!empty($order_date_err)) ? 'has-error' : ''; ?>">
 <label>Order Date</label>
-<input type="text" name="order_date" class="form-control" value="<?php echo $order_date; ?>" readonly>
+<input type="text" name="order_date" class="form-control" value="<?php echo $order_date; ?>">
+<span class="help-block"><?php echo $order_date_err;?></span>
 </div>
-<div class="form-group">
+<div class="form-group <?php echo (!empty($product_name_err)) ? 'has-error' : ''; ?>">
 <label>Product Name</label>
-<input type="text" name="product_number" class="form-control" value="<?php echo $product_number; ?>" readonly>
+<input type="text" name="product_name" class="form-control" value="<?php echo $product_name; ?>">
+<span class="help-block"><?php echo $product_name_err;?></span>
 </div>
 <div class="form-group <?php echo (!empty($quantity_ordered_err)) ? 'has-error' : ''; ?>">
 <label>Quantity Ordered</label>
@@ -154,6 +184,7 @@ margin: 0 auto;
 <input type="text" name="price_each" class="form-control" value="<?php echo $price_each; ?>">
 <span class="help-block"><?php echo $price_each_err;?></span>
 </div>
+<input type="hidden" name="shipped_date" value="<?php echo $shipped_date; ?>"/>
 <input type="submit" class="btn btn-primary" value="Submit">
 <a href="index.php" class="btn btn-default">Cancel</a>
 </form>
