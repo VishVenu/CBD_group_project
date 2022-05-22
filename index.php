@@ -8,7 +8,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <style type="text/css">
         .wrapper{
-            width: 90%;
+            width: 90%; 
             margin: 0 auto;
         }
         .page-header h2{
@@ -37,10 +37,13 @@
                     require_once "config.php";
 
                     // Attempt select query execution
-                    $sql = "SELECT orderNumber, orderDate, orderLineNumber, productName, quantityOrdered, priceEach, productCode FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN products USING (productCode) ORDER BY orderNumber, orderLineNumber;";
+                    $sql = "SELECT orderNumber, orderDate, orderLineNumber, productName, quantityOrdered, priceEach, productCode 
+                    FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN products USING (productCode) 
+                    ORDER BY orderNumber, orderLineNumber;";
 
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
+                            // Create table structure
                             echo "<table class='table table-bordered table-striped'>";
                                 echo "<thead>";
                                     echo "<tr>";
@@ -54,6 +57,7 @@
                                     echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
+                                // Populate records, if any
                                 while($row = mysqli_fetch_array($result)){
                                     echo "<tr>";
                                     echo "<td>" . $row['orderNumber'] . "</td>";
@@ -63,9 +67,13 @@
                                     echo "<td>" . $row['quantityOrdered'] . "</td>";
                                     echo "<td>" . $row['priceEach'] . "</td>";
                                     echo "<td>";
-                                    echo "<a href='read.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."' title='View Record' data-toggle='tooltip'><span class='glyphicon glyphicon-eye-open'></span></a>";
-                                        echo "<a href='update.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."' title='Update Record' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
-                                        echo "<a href='delete.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."' title='Delete Record' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
+                                    // Add components for actions
+                                    echo "<a href='read.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."'
+                                        title='View Record' data-toggle='tooltip'><span class='glyphicon glyphicon-eye-open'></span></a>";
+                                    echo "<a href='update.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."'
+                                         title='Update Record' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
+                                    echo "<a href='delete.php?order_number=". $row['orderNumber'] ."&order_line_number=". $row['orderLineNumber'] ."'
+                                         title='Delete Record' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
                                     echo "</td>";
                                     echo "</tr>";
                                 }

@@ -5,16 +5,18 @@ require_once "config.php";
 // Define variables and initialize with empty values
 $order_date = $product_name = $quantity_ordered = $price_each = $shipped_date='';
 $order_date_err = $product_name_err = $quantity_ordered_err = $price_each_err = '';
+
 // Processing form data when form is submitted
 $order_number = $_GET['order_number'];
-
 $order_line_number = $_GET['order_line_number'];
 
 if(!empty($order_number) && !empty($order_line_number)){
     // Validate order date
     if(!isset($_POST["quantity_ordered"]))
     {
-        $select_sql = "SELECT orderDate, productName, quantityOrdered, priceEach, shippedDate FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN products USING (productCode) WHERE orders.orderNumber = ? AND orderdetails.orderLineNumber = ?;";
+        $select_sql = "SELECT orderDate, productName, quantityOrdered, priceEach, shippedDate 
+        FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN products USING (productCode) 
+        WHERE orders.orderNumber = ? AND orderdetails.orderLineNumber = ?;";
         
         if($select_stmt = mysqli_prepare($link, $select_sql)){
             // Bind variables to the prepared statement as parameters
@@ -44,13 +46,13 @@ if(!empty($order_number) && !empty($order_line_number)){
     }
     else{
         $shipped_date = trim($_POST["shipped_date"]);
-        
         // Validate order date
         $input_order_date = trim($_POST["order_date"]);
         if(empty($input_order_date)){
             $order_date_err="Please enter the order date.";
         }
-        elseif(!filter_var($input_order_date, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/")))){
+        elseif(!filter_var($input_order_date, FILTER_VALIDATE_REGEXP, array(
+            "options"=>array("regexp"=>"/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/")))){
             $order_date_err = "Please enter a valid date in yyyy-mm-dd format.";
         }
         elseif($input_order_date > $shipped_date){
@@ -64,7 +66,7 @@ if(!empty($order_number) && !empty($order_line_number)){
         // Validate product name
         $input_product_name = trim($_POST["product_name"]);
         if(empty($input_product_name)){
-            $product_name_err="Please enter the order date.";
+            $product_name_err="Please enter the product name.";
         }
         else{
             $product_name_err='';
@@ -79,7 +81,6 @@ if(!empty($order_number) && !empty($order_line_number)){
             $quantity_ordered_err ='';
             $quantity_ordered = $input_quantity_ordered;
         }
-        
         
         // Validate price each
         $input_price_each = trim($_POST["price_each"]);
@@ -96,11 +97,15 @@ if(!empty($order_number) && !empty($order_line_number)){
         // Check input errors before inserting in database
         if(empty($quantity_ordered_err) && empty($price_each_err) && empty($order_date_err) && empty($product_name_err)){
             // Prepare an update statement
-            $sql = "UPDATE orderdetails INNER JOIN orders on orders.orderNumber=orderdetails.orderNumber INNER JOIN products on products.productCode=orderdetails.productCode SET orderDate = ? , productName = ?,quantityOrdered = ?, priceEach = ?  WHERE orderdetails.orderNumber = ? AND orderdetails.orderLineNumber = ?;";
+            $sql = "UPDATE orderdetails INNER JOIN orders on orders.orderNumber=orderdetails.orderNumber 
+            INNER JOIN products on products.productCode=orderdetails.productCode 
+            SET orderDate = ? , productName = ?,quantityOrdered = ?, priceEach = ?  
+            WHERE orderdetails.orderNumber = ? AND orderdetails.orderLineNumber = ?;";
             
             if($stmt = mysqli_prepare($link, $sql)){
                 // Bind variables to the prepared statement as parameters
-                mysqli_stmt_bind_param($stmt, "sssssi", $param_order_date, $param_product_name, $param_quantity_ordered, $param_price_each, $param_order_number, $param_order_line_number);
+                mysqli_stmt_bind_param($stmt, "sssssi", $param_order_date, $param_product_name, 
+                $param_quantity_ordered, $param_price_each, $param_order_number, $param_order_line_number);
                 
                 // Set parameters
                 $param_order_date=$order_date;

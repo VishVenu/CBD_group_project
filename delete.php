@@ -1,6 +1,7 @@
 <?php
 // Process delete operation after confirmation
-if(isset($_POST['order_number']) && !empty($_POST['order_number']) && isset($_POST['order_line_number']) && !empty($_POST['order_line_number'])){
+if(isset($_POST['order_number']) && !empty($_POST['order_number']) 
+&& isset($_POST['order_line_number']) && !empty($_POST['order_line_number'])){
 
     $order_number = $_POST['order_number'];
     $order_line_number = $_POST['order_line_number'];
@@ -34,9 +35,9 @@ if(isset($_POST['order_number']) && !empty($_POST['order_number']) && isset($_PO
     // Close connection
     mysqli_close($link);
 } else{
-    // Check existence of order parameter
+    // Check existence of order number and order line number parameter
     if(empty($_GET['order_number']) || empty($_GET['order_line_number'])){
-        // URL doesn't contain id parameter. Redirect to error page
+        // URL doesn't contain necessary parameters. Redirect to error page
         header("location: error.php");
         exit();
     }
